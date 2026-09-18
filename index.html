@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sorrento — Pedí tu tarta</title>
+<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Lobster&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<header>
+  <div class="hdr-p">Tartas</div>
+  <div class="hdr-s">Sorrento</div>
+  <div class="hdr-tag">🥧 Pedí tu tarta para hoy</div>
+</header>
+
+<div class="contenedor">
+  <div class="info-banner">Armá tu pedido y confirmalo acá. Coordinamos el pago por <b>WhatsApp</b> al recibir tu pedido.</div>
+
+  <div id="categorias-lista"></div>
+
+  <div class="footer-msg">¿Consultas? Escribinos directo por WhatsApp.</div>
+</div>
+
+<div class="cart-bar" id="cart-bar" onclick="abrirCarrito()">
+  <b>🛒 <span id="cart-count">0</span> productos</b>
+  <span>Ver pedido · <span id="cart-total">$0</span></span>
+</div>
+
+<!-- MODAL CARRITO / CHECKOUT -->
+<div class="modal-bg" id="modal-carrito">
+  <div class="modal">
+    <div id="vista-carrito">
+      <h2>🛒 Tu pedido</h2>
+      <div id="cart-items"></div>
+      <div class="cart-total-row">
+        <span>Total</span>
+        <span id="cart-total-modal">$0</span>
+      </div>
+      <button class="btn-confirmar" onclick="irACheckout()">Continuar</button>
+      <button class="btn-volver" onclick="cerrarCarrito()">Seguir eligiendo</button>
+    </div>
+
+    <div id="vista-checkout" style="display:none">
+      <h2>📋 Tus datos</h2>
+      <div class="tipo-row">
+        <button type="button" class="tipo-btn active" id="tipo-envio" onclick="setTipo('envio')">🛵 Envío</button>
+        <button type="button" class="tipo-btn" id="tipo-retira" onclick="setTipo('retira')">🏠 Retira en local</button>
+      </div>
+      <div class="frow"><label>Nombre y apellido *</label><input type="text" id="f-nombre" placeholder="Ej: María González"></div>
+      <div class="frow"><label>Teléfono *</label><input type="tel" id="f-tel" placeholder="Ej: 2914 123456"></div>
+      <div class="frow" id="frow-dir"><label>Dirección de entrega *</label><input type="text" id="f-dir" placeholder="Ej: San Martín 345, 1ºB"></div>
+      <div id="aviso-envio" style="display:none;background:var(--rojo-claro);border:1px solid var(--rojo);border-radius:8px;padding:9px 12px;margin-bottom:12px;font-size:12px;color:var(--rojo);font-weight:600">
+        🛵 El costo del envío no está incluido en el total. Te lo confirmamos por WhatsApp según tu zona.
+      </div>
+      <div class="frow"><label>Horario preferido</label><input type="text" id="f-horario" placeholder="Ej: 20:00 / lo antes posible"></div>
+      <div class="frow"><label>Forma de pago</label>
+        <select id="f-pago" onchange="toggleDatosTransferencia()">
+          <option value="">— Coordinar por WhatsApp —</option>
+          <option>Efectivo</option>
+          <option>Transferencia</option>
+          <option>Débito</option>
+          <option>MercadoPago</option>
+        </select>
+      </div>
+      <div id="datos-transferencia" style="display:none;background:var(--rojo-claro);border:1px solid var(--rojo);border-radius:10px;padding:12px 14px;margin-bottom:14px">
+        <div style="font-size:12px;font-weight:700;color:var(--rojo);margin-bottom:8px">🏦 Datos para transferir</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;background:#fff;border-radius:7px;padding:8px 10px;margin-bottom:6px">
+          <div>
+            <div style="font-size:10px;color:var(--gris);text-transform:uppercase;letter-spacing:.5px">Alias</div>
+            <div style="font-size:15px;font-weight:800;color:var(--texto)">sorrento10</div>
+          </div>
+          <button type="button" onclick="copiarAlias()" id="btn-copiar-alias" style="padding:6px 12px;border-radius:6px;border:none;background:var(--rojo);color:#fff;font-size:11.5px;font-weight:700;cursor:pointer">Copiar</button>
+        </div>
+        <div style="font-size:12px;color:var(--gris)">Titular: <b style="color:var(--texto)">Martín Sebastián Diez</b></div>
+        <div style="font-size:11.5px;color:var(--rojo);margin-top:8px;font-weight:600">📸 Después de confirmar, enviá el comprobante por el chat de WhatsApp que se va a abrir.</div>
+      </div>
+      <button class="btn-confirmar" id="btn-confirmar" onclick="confirmarPedido()">✓ Confirmar pedido</button>
+      <button class="btn-volver" onclick="volverACarrito()">← Volver al carrito</button>
+    </div>
+
+    <div id="vista-exito" style="display:none;text-align:center;padding:10px 0">
+      <div style="font-size:44px;margin-bottom:10px">✅</div>
+      <h2 style="text-align:center">¡Pedido enviado!</h2>
+      <p style="font-size:13px;color:var(--gris);margin-bottom:6px" id="exito-msg"></p>
+      <p style="font-size:12.5px;color:var(--rojo);font-weight:700;margin-bottom:16px" id="exito-instruccion">⚠️ Para confirmar tu pedido, avisanos por WhatsApp tocando el botón de abajo.</p>
+      <button class="btn-confirmar btn-wsp-pulso" style="background:#25D366;font-size:16px;padding:16px" onclick="avisarWhatsApp()">📲 Enviar pedido por WhatsApp</button>
+      <button class="btn-volver" onclick="cerrarTodo()">Hacer otro pedido</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
